@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Launch Slack app, or focus if already running. Assumes Slack app is installed
+
+# try to focus the window
+success_str=`i3-msg '[class="Slack"] focus' 2>/dev/null | jq .[0].success`
+[ "$success_str" == 'true' ] && exit 0
+
+# otherwise start it
+/usr/bin/slack &

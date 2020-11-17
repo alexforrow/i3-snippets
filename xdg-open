@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Quick script to ensure all links passing through xdg-open (i.e. the file/url handler) go to my work Chrome profile
+
+if [[ "$1" =~ https?:// ]]; then
+  chrom_work $@
+else
+  /usr/bin/xdg-open $@
+fi

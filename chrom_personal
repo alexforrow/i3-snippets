@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Launch a Google Chrome window in my personal profile
+
+/usr/bin/google-chrome-stable --profile-directory="Default" $@

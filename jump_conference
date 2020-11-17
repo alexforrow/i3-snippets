@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Launch conference call in 'app' mode on specific workspace
+# Expects URL in clipboard. If URL isn't found in clipboard, it launches calendar so you can copy URL. Then you need to launch again
+# The benefit is that you quickly end up with a conference call
+#   a) on the right workspace/monitor
+#   b) in app mode so its space efficient and other tabs don't open in it
+
+# Adaptation required
+# * Install `xclip`
+# * Update URL_PATTERNS to match your conference tool of choice
+# * Update WORKSPACE to the i3 workspace you want it displayed on (tip: i3 lets you force this workspace to a certain monitor)
+
+URL_PATTERNS="https://meetings.vonage.com/\d+ https://meet.google.com/[a-z-]+ https://freeconferencing.vonage.com/room/[\w-.]+"
+WORKSPACE="1: conference"
+
+# first try to focus existing window
+for pattern in $URL_PATTERNS; do
+  window_instance=`echo $pattern | sed 's#https://\([^/]\+\).*#\1#'`
+  success_str=`i3-msg "[class=\"^Google-chrome$\" instance=\"^${window_instance}\" window_role=\"^pop-up$\"] focus" 2>/dev/null | jq .[0].success`
+  [ "$success_str" == 'true' ] && exit 0
+done
+
+# no existing window found, so check clipboard for conferencing url
+clipboard="`xclip -o`"
+for pattern in $URL_PATTERNS; do
+  match=`echo $clipboard | grep -Po $pattern`
+  if [ ! -z "$match" ]; then
+    echo "Found match in clipboard, launching $match"
+    i3-msg "workspace number $WORKSPACE"
+    chrom_work --app=$match
+    exit 0
+  fi
+done
+
+echo "No match in clipboard, launching calendar"
+calendar

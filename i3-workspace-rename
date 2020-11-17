@@ -1,0 +1,32 @@
+#!/bin/bash 
+
+# Rename current i3 workspace
+
+# adapted from http://superuser.com/questions/966706/i3-window-manager-ampersand-in-commands
+
+# get name from dmenu. 
+if [ -z "$1" ]; then
+  wsname=$(echo -n | dmenu -b -p "New workspace name") || exit 1
+else
+  wsname="$1"
+fi
+# escape backslashes to avoid inadvertently escaping other characters
+wsname=${wsname//\\/\\\\}
+# escape double quotes as the name is passed inside double quotes to i3-msg
+wsname=${wsname//\"/\\\"}
+# escape ampersand because of pango
+wsname=${wsname//&/&amp;}
+# escape less-than sign also because of pango
+wsname=${wsname//</&lt;}
+
+# retain number if it has one
+number=`i3-workspace-current | cut -d\  -f1`
+if [ -z "$wsname" ];then
+  wsname=$number
+elif [[ $number =~ [[:digit:]] ]]; then
+  #wsname="$number <span foreground=\\\"yellow\\\">$wsname</span>"
+  wsname="${number} $wsname"
+fi
+
+# call i3-msg to rename workspace
+i3-msg rename workspace to "\"${wsname}\""

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Launch urxvt with the CWD set to the name of the workspace (if it exists)
+
+DIR=`i3-workspace-current | awk '{print $2}'`
+
+if [ ! -z "$DIR" -a -d "$DIR" ]; then
+  cd $DIR
+fi
+
+urxvt

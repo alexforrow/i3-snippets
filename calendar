@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Launch Google Calendar 'app', or focus if already running
+
+# try to focus the window
+success_str=`i3-msg '[class="^Google-chrome$" instance="^calendar.google.com" window_role="^pop-up$"] focus' 2>/dev/null | jq .[0].success`
+[ "$success_str" == 'true' ] && exit 0
+
+# otherwise start it
+/usr/bin/google-chrome-stable --profile-directory='Profile 2' --app=https://calendar.google.com &
